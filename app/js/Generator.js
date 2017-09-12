@@ -10,27 +10,16 @@ class Generator {
     };
   };
 
-  generateStars(amount = 30) {
+  generateStars(amount = 50) {
     let stars = [], x, y;
 
     for(let i = 0; i < amount; i++) {
       x = Math.floor(Math.random() * this.area.maxWith) + this.area.minWidth;
       y = Math.floor(Math.random() * this.area.maxHeight) + this.area.minHeight;
 
-      stars.push(new Star(i, x, y));
+      stars.push(new Star(i, {x, y}));
     }
 
     return stars;
   };
-
-  // _generateNeighbours(max) {
-  //   max = max > 5 ? 5 : max;
-  //   let neighboursNo = Math.floor(Math.random() * max),
-  //       neighbours = [];
-  //   for(let i=0; i < max; i++) {
-  //     if(Math.random() > 0.5) {
-  //
-  //     }
-  //   }
-  // }
 };

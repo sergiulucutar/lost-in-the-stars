@@ -1,9 +1,9 @@
 class Star {
 
-  constructor(id, x = 0, y = 0) {
+  constructor(id, position) {
     this.id = id;
-    this.position = {x, y};
-    this.radius = 9;
+    this.position = position;
+    this.radius = 4 * (Math.floor(Math.random() * 3) + 1);
 
     this.isHome = false;
     this.isVisibleFromEvent = false;
@@ -11,9 +11,10 @@ class Star {
     this.brightness = {
       min: 50,
       max: 100,
-      speed: Math.random() / 10 + 0.1,
+      speed: Math.random() / 10 + 0.12,
       value: 55
     }
+    this.getColor();
   };
 
   update() {
@@ -21,8 +22,7 @@ class Star {
   }
 
   render(context) {
-    //this.isHome ? context.fillStyle = 'green' :
-    context.fillStyle = 'white';
+    context.fillStyle = this.color;
     context.save();
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
@@ -41,5 +41,18 @@ class Star {
     }
 
     this.brightness.value += this.brightness.speed;
+  }
+
+  getColor() {
+    let random = Math.floor(Math.random() * 4) + 1;
+    switch(random) {
+      case 4: this.color = 'orange';
+        break;
+      case 3: this.color = 'purple';
+        break;
+      case 2: this.color = 'cyan';
+        break;
+      default: this.color = 'white';
+    }
   }
 };

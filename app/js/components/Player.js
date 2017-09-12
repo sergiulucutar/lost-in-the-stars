@@ -3,19 +3,30 @@ class Player {
   constructor(position) {
     this.position = position;
     this.offset = 40;
+    this.path = [0];
+    this.actionSpent = false;
+    this.artefacts = 0;
 
     this.energy = 100;
+    this.excessEnergy = 0;
     this.viewRadius = this.energy * 3;
-    this.actionSpent = false;
-    this.path = [0];
 
     this.speed = 10;
     this.rotationAngle = 50;
     this.playIdle = true;
+
+    this.regenerate = {
+      energy: 0,
+      excess: 0
+    };
   }
 
   calculateRation(pointA, pointB) {
     return Math.abs(pointA - pointB) / this.movement.velocity;
+  }
+
+  onDestinationReached(callback){
+    this.reachTargetCallback = callback;
   }
 
   pushToPath(id) {
@@ -50,25 +61,31 @@ class Player {
 
   setPosition(position) {
     this.position = position;
-    this.adjustEnergy(-10);
   }
 
-  travelTo(position) {
-    this.target = position;
-    this.adjustEnergy(-10);
+  travelTo(star) {
+    this.pushToPath(star.id)
+    this.target = star;
     this.playIdle = false;
   }
 
   update() {
     if(this.target) {
 
-      let distance = Utils.calculateDistance(this.position, this.target),
-          newX = this.position.x + ((this.target.x - this.position.x) / distance) * this.speed,
-          newY = this.position.y + ((this.target.y - this.position.y) / distance) * this.speed;
+      let distance = Utils.calculateDistance(this.position, this.target.position),
+          newX = this.position.x + ((this.target.position.x - this.position.x) / distance) * this.speed,
+          newY = this.position.y + ((this.target.position.y - this.position.y) / distance) * this.speed;
 
-      if(Utils.calculateDistance(this.position, this.target) < Utils.calculateDistance(this.position, {x: newX, y: newY})) {
-        this.position.x = this.target.x;
-        this.position.y = this.target.y;
+      //if the player reached the target
+      if(Utils.calculateDistance(this.position, this.target.position) < Utils.calculateDistance(this.position, {x: newX, y: newY})) {
+        this.position.x = this.target.position.x;
+        this.position.y = this.target.position.y;
+
+        //if the target is a new star
+        if(this.alreadyVisited(this.target.id) === undefined) {
+          this.regenerate.energy += this.target.radius;
+          this.reachTargetCallback(this.target.radius);
+        }
         this.target = null;
         this.playIdle = true;
 
@@ -77,11 +94,53 @@ class Player {
 
       this.position.x = newX;
       this.position.y = newY;
+      this.adjustEnergy(-1.5);
+    }
+
+    if(this.regenerate.energy !== 0) {
+      let sign = this.regenerate.energy > 0 ? 1 : -1;
+      this.adjustEnergy(sign * 1);
+      this.regenerate.energy += -1 * sign;
+    }
+
+    if(this.regenerate.excess > 0) {
+      this.excessEnergy += 1;
+      this.regenerate.excess -= 1;
     }
   }
 
   adjustEnergy(amount) {
-    this.energy += amount;
-    this.viewRadius += amount * 3;
+    let change;
+    //Spend excess energy first
+    if(this.excessEnergy > 0 && amount < 0) {
+      change = this.excessEnergy + amount;
+      if(change <= 0 && this.excessEnergy + amount <= 0) {
+        this.excessEnergy = 0;
+        this.energy += change;
+      }
+      this.excessEnergy += amount;
+      this.viewRadius = (this.energy + this.excessEnergy) * 3;
+      return;
+    }
+    this.energy = this.energy + amount > 100 ? 100 : this.energy + amount;
+    this.viewRadius = (this.energy + this.excessEnergy) * 3;
+  }
+
+  absordStar(amount) {
+    let excess = this.energy + amount * 3 - 100;
+    if(excess > 0) {
+      this.regenerate.excess = this.regenerate.excess > 100 ? 100 : this.regenerate.excess + excess;
+    }
+    this.regenerate.energy += amount;
+
+    console.log(this.regenerate.energy, this.regenerate.excess);
+  }
+
+  alreadyVisited(id) {
+    return this.path.slice(0, this.path.length - 2).find(starId => starId === id);
+  }
+
+  canTravelToStar(starId) {
+    return this.path.slice(-1)[0] !== starId;
   }
 };
