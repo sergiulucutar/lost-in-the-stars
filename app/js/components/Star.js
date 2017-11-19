@@ -9,10 +9,10 @@ class Star {
     this.isVisibleFromEvent = false;
 
     this.brightness = {
-      min: 50,
-      max: 100,
-      speed: Math.random() / 10 + 0.12,
-      value: 55
+      min: 25,
+      max: 50,
+      speed: Math.random() / 3,
+      value: 30
     }
     this.getColor();
   };
@@ -27,8 +27,13 @@ class Star {
     context.beginPath();
     context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI, false);
 
+    // const gradient = context.createRadialGradient(this.position.x, this.position.y, this.radius, this.position.x, this.position.y, 0);
+    // gradient.addColorStop(0, this.color);
+    // gradient.addColorStop(1, 'white');
+    // context.fillStyle = gradient;
+
     context.shadowBlur = this.brightness.value;
-    context.shadowColor = "white";
+    context.shadowColor = this.color;
 
     context.closePath();
     context.fill();
