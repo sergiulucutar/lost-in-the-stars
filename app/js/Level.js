@@ -93,9 +93,9 @@ class Level {
         this.player.artefacts ++;
         this.interface.notify("+1 Artefact");
       } else if(random > 0.2) {
-        energy = -1 * Utils.randomBetween(1, 20);
-        this.player.regenerate.energy += energy;
-        this.interface.notifyEnergy(energy);
+        // energy = -1 * Utils.randomBetween(1, 20);
+        // this.player.regenerate.energy += energy;
+        // this.interface.notifyEnergy(energy);
       } else {
         energy = Utils.randomBetween(1, 20);
         this.player.regenerate.energy += energy;

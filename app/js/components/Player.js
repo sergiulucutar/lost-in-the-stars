@@ -132,8 +132,6 @@ class Player {
       this.regenerate.excess = this.regenerate.excess > 100 ? 100 : this.regenerate.excess + excess;
     }
     this.regenerate.energy += amount;
-
-    console.log(this.regenerate.energy, this.regenerate.excess);
   }
 
   alreadyVisited(id) {

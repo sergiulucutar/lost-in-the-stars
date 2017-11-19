@@ -6,13 +6,6 @@ class Game {
 
     this.backgroudColor = '#17131c'; //'#211c28';
 
-    this.world = {
-      size: {
-        width: 10000,
-        height: 10000
-      }
-    };
-
     this.generator = new Generator(this.canvas);
     this.eventHandler = new EventHandler(this.canvas);
     this.interface = new Interface(this.canvas, this.eventHandler);
@@ -126,8 +119,9 @@ class Game {
   const canvas = document.getElementById('canvas');
   const context = canvas.getContext("2d");
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  // The Scroll bar appears, so substract 1 
+  canvas.width = document.documentElement.clientWidth - 1;
+  canvas.height = document.documentElement.clientHeight;
 
   let game = new Game(canvas, context);
   game.init();
